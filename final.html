@@ -1,0 +1,455 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Flywheel Virtual Lab</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #4361ee;
+            --primary-dark: #3a56d4;
+            --secondary: #3f37c9;
+            --accent: #4895ef;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --gray: #6c757d;
+            --success: #4cc9f0;
+            --warning: #f72585;
+            --card-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+            --transition: all 0.3s ease;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Poppins', sans-serif;
+            line-height: 1.6;
+            color: var(--dark);
+            background: linear-gradient(135deg, #f5f7fa 0%, #c3cfe2 100%);
+            min-height: 100vh;
+            padding: 2rem;
+        }
+
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background-color: white;
+            border-radius: 16px;
+            box-shadow: var(--card-shadow);
+            overflow: hidden;
+        }
+
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
+            color: white;
+            padding: 2rem;
+            text-align: center;
+        }
+
+        h1 {
+            font-size: 2.5rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+
+        .subtitle {
+            font-weight: 300;
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+
+        .lab-content {
+            padding: 2rem;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 2rem;
+        }
+
+        .panel {
+            background-color: white;
+            border-radius: 12px;
+            padding: 1.5rem;
+            box-shadow: var(--card-shadow);
+            transition: var(--transition);
+        }
+
+        .panel:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.15);
+        }
+
+        h2 {
+            color: var(--primary);
+            font-size: 1.5rem;
+            margin-bottom: 1.5rem;
+            padding-bottom: 0.5rem;
+            border-bottom: 2px solid var(--accent);
+        }
+
+        .input-group {
+            margin-bottom: 1.25rem;
+        }
+
+        label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--dark);
+            font-size: 0.95rem;
+        }
+
+        input {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 2px solid #e9ecef;
+            border-radius: 8px;
+            font-family: 'Roboto Mono', monospace;
+            font-size: 0.95rem;
+            transition: var(--transition);
+        }
+
+        input:focus {
+            outline: none;
+            border-color: var(--accent);
+            box-shadow: 0 0 0 3px rgba(72, 149, 239, 0.2);
+        }
+
+        .btn-container {
+            display: flex;
+            justify-content: center;
+            gap: 1rem;
+            margin: 2rem 0;
+        }
+
+        button {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.8rem 1.75rem;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 500;
+            transition: var(--transition);
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        button:hover {
+            background-color: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px rgba(0, 0, 0, 0.15);
+        }
+
+        button:active {
+            transform: translateY(0);
+        }
+
+        .results {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: var(--light);
+            border-radius: 12px;
+            border-left: 4px solid var(--success);
+            display: none;
+        }
+
+        .result-item {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.75rem;
+            padding-bottom: 0.75rem;
+            border-bottom: 1px dashed #dee2e6;
+        }
+
+        .result-label {
+            font-weight: 500;
+        }
+
+        .result-value {
+            font-weight: 600;
+            font-family: 'Roboto Mono', monospace;
+            color: var(--secondary);
+        }
+
+        .theory {
+            margin-top: 2rem;
+            padding: 1.5rem;
+            background-color: var(--light);
+            border-radius: 12px;
+            grid-column: 1 / -1;
+        }
+
+        .formula {
+            font-family: 'Roboto Mono', monospace;
+            background-color: #e9ecef;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            display: inline-block;
+            margin: 0.5rem 0;
+            font-size: 0.95rem;
+            border-left: 3px solid var(--accent);
+        }
+
+        ul {
+            padding-left: 1.5rem;
+            margin: 1rem 0;
+        }
+
+        li {
+            margin-bottom: 0.5rem;
+        }
+
+        @media (max-width: 768px) {
+            .lab-content {
+                grid-template-columns: 1fr;
+            }
+            
+            body {
+                padding: 1rem;
+            }
+            
+            h1 {
+                font-size: 2rem;
+            }
+            
+            .btn-container {
+                flex-direction: column;
+            }
+            
+            button {
+                width: 100%;
+            }
+        }
+
+        /* Animation for button click */
+        @keyframes buttonClick {
+            0% { transform: scale(1); }
+            50% { transform: scale(0.95); }
+            100% { transform: scale(1); }
+        }
+
+        button:active {
+            animation: buttonClick 0.3s ease;
+        }
+
+        /* Tooltip for input fields */
+        .input-group {
+            position: relative;
+        }
+
+        .input-group:hover::after {
+            content: attr(data-tooltip);
+            position: absolute;
+            bottom: 100%;
+            left: 0;
+            background-color: var(--dark);
+            color: white;
+            padding: 0.5rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+            width: max-content;
+            max-width: 200px;
+        }
+
+        .input-group:hover::after {
+            opacity: 1;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <header>
+            <h1>Flywheel Virtual Lab</h1>
+            <p class="subtitle">Calculate the moment of inertia using the falling mass method</p>
+        </header>
+        
+        <div class="lab-content">
+            <div class="panel">
+                <h2>Apparatus Details</h2>
+                <div class="input-group" data-tooltip="Mass of the flywheel in kilograms">
+                    <label for="flywheel-mass">Mass of flywheel (M) in kg:</label>
+                    <input type="number" id="flywheel-mass" step="0.001" min="0" placeholder="e.g. 5.0">
+                </div>
+                <div class="input-group" data-tooltip="Radius of the flywheel in meters">
+                    <label for="flywheel-radius">Radius of flywheel (R) in m:</label>
+                    <input type="number" id="flywheel-radius" step="0.001" min="0" placeholder="e.g. 0.15">
+                </div>
+                <div class="input-group" data-tooltip="Radius of the axle in meters">
+                    <label for="axle-radius">Radius of axle (r) in m:</label>
+                    <input type="number" id="axle-radius" step="0.001" min="0" placeholder="e.g. 0.02">
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Experimental Parameters</h2>
+                <div class="input-group" data-tooltip="Mass of the hanging weight in kilograms">
+                    <label for="hanging-mass">Mass of hanging weight (m) in kg:</label>
+                    <input type="number" id="hanging-mass" step="0.001" min="0" placeholder="e.g. 0.5">
+                </div>
+                <div class="input-group" data-tooltip="Height from which the mass falls in meters">
+                    <label for="fall-height">Height of fall (h) in m:</label>
+                    <input type="number" id="fall-height" step="0.001" min="0" placeholder="e.g. 1.0">
+                </div>
+                <div class="input-group" data-tooltip="Time taken for N revolutions in seconds">
+                    <label for="time1">Time for N revolutions (t₁) in s:</label>
+                    <input type="number" id="time1" step="0.01" min="0" placeholder="e.g. 4.2">
+                </div>
+                <div class="input-group" data-tooltip="Time taken for N+5 revolutions in seconds">
+                    <label for="time2">Time for N+5 revolutions (t₂) in s:</label>
+                    <input type="number" id="time2" step="0.01" min="0" placeholder="e.g. 6.8">
+                </div>
+                <div class="input-group" data-tooltip="Initial number of revolutions">
+                    <label for="revolutions">Number of revolutions (N):</label>
+                    <input type="number" id="revolutions" step="1" min="1" value="5">
+                </div>
+            </div>
+            
+            <div class="btn-container">
+                <button onclick="calculate()">Calculate Moment of Inertia</button>
+                <button onclick="resetForm()">Reset Values</button>
+            </div>
+            
+            <div class="results" id="results">
+                <h2>Results</h2>
+                <div class="result-item">
+                    <span class="result-label">Angular velocity (ω₁):</span>
+                    <span class="result-value" id="omega1">0.00</span> rad/s
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Angular velocity (ω₂):</span>
+                    <span class="result-value" id="omega2">0.00</span> rad/s
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Average angular velocity (ω):</span>
+                    <span class="result-value" id="omega-avg">0.00</span> rad/s
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Angular acceleration (α):</span>
+                    <span class="result-value" id="angular-acceleration">0.00</span> rad/s²
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Moment of inertia (I):</span>
+                    <span class="result-value" id="moment-of-inertia">0.00</span> kg·m²
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Theoretical I:</span>
+                    <span class="result-value" id="theoretical-inertia">0.00</span> kg·m²
+                </div>
+                <div class="result-item">
+                    <span class="result-label">Percentage error:</span>
+                    <span class="result-value" id="percentage-error">0.00</span>%
+                </div>
+            </div>
+            
+            <div class="theory">
+                <h2>Theory</h2>
+                <p>The moment of inertia (I) of a flywheel can be determined using the falling mass method. When a mass (m) is attached to a string wound around the flywheel's axle and allowed to fall through a height (h), it causes the flywheel to rotate.</p>
+                
+                <p>The key formulas used are:</p>
+                <p class="formula">ω₁ = 2πN / t₁</p>
+                <p class="formula">ω₂ = 2π(N + 5) / t₂</p>
+                <p class="formula">α = (ω₂² - ω₁²) / (4π × 5)</p>
+                <p class="formula">I = [m(g - rα)r] / α</p>
+                <p class="formula">I<sub>theoretical</sub> = ½MR² (for a solid disk)</p>
+                
+                <p>Where:</p>
+                <ul>
+                    <li>ω₁, ω₂ = Angular velocities</li>
+                    <li>α = Angular acceleration</li>
+                    <li>r = Radius of axle</li>
+                    <li>R = Radius of flywheel</li>
+                    <li>M = Mass of flywheel</li>
+                    <li>m = Mass of hanging weight</li>
+                    <li>g = Acceleration due to gravity (9.81 m/s²)</li>
+                </ul>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function calculate() {
+            // Get input values
+            const M = parseFloat(document.getElementById('flywheel-mass').value);
+            const R = parseFloat(document.getElementById('flywheel-radius').value);
+            const r = parseFloat(document.getElementById('axle-radius').value);
+            const m = parseFloat(document.getElementById('hanging-mass').value);
+            const h = parseFloat(document.getElementById('fall-height').value);
+            const t1 = parseFloat(document.getElementById('time1').value);
+            const t2 = parseFloat(document.getElementById('time2').value);
+            const N = parseFloat(document.getElementById('revolutions').value);
+            
+            // Constants
+            const g = 9.81; // acceleration due to gravity in m/s²
+            const PI = Math.PI;
+            
+            // Validate inputs
+            if (isNaN(M) || isNaN(R) || isNaN(r) || isNaN(m) || isNaN(h) || isNaN(t1) || isNaN(t2) || isNaN(N)) {
+                alert("Please fill in all fields with valid numbers");
+                return;
+            }
+            
+            // Calculations
+            const omega1 = (2 * PI * N) / t1;
+            const omega2 = (2 * PI * (N + 5)) / t2;
+            const omegaAvg = (omega1 + omega2) / 2;
+            const alpha = (Math.pow(omega2, 2) - Math.pow(omega1, 2)) / (4 * PI * 5);
+            
+            // Moment of inertia
+            const I = (m * (g - (r * alpha)) * r) / alpha;
+            
+            // Theoretical moment of inertia (for solid disk)
+            const I_theoretical = 0.5 * M * Math.pow(R, 2);
+            
+            // Percentage error
+            const percentageError = Math.abs((I - I_theoretical) / I_theoretical) * 100;
+            
+            // Display results
+            document.getElementById('omega1').textContent = omega1.toFixed(4);
+            document.getElementById('omega2').textContent = omega2.toFixed(4);
+            document.getElementById('omega-avg').textContent = omegaAvg.toFixed(4);
+            document.getElementById('angular-acceleration').textContent = alpha.toFixed(6);
+            document.getElementById('moment-of-inertia').textContent = I.toFixed(6);
+            document.getElementById('theoretical-inertia').textContent = I_theoretical.toFixed(6);
+            document.getElementById('percentage-error').textContent = percentageError.toFixed(2);
+            
+            // Show results section
+            document.getElementById('results').style.display = 'block';
+            
+            // Smooth scroll to results
+            document.getElementById('results').scrollIntoView({ behavior: 'smooth' });
+        }
+        
+        function resetForm() {
+            // Reset all input fields
+            document.querySelectorAll('input').forEach(input => {
+                if (input.id !== 'revolutions') {
+                    input.value = '';
+                } else {
+                    input.value = '5';
+                }
+            });
+            
+            // Hide results
+            document.getElementById('results').style.display = 'none';
+        }
+        
+        // Show results if there are already calculated values
+        window.addEventListener('load', () => {
+            if (document.getElementById('moment-of-inertia').textContent !== '0.00') {
+                document.getElementById('results').style.display = 'block';
+            }
+        });
+    </script>
+</body>
+</html>
